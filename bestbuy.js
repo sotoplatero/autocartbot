@@ -1,39 +1,33 @@
+process.env.NTBA_FIX_319 = 1;
 require('dotenv').config()
-var TelegramBot = require('node-telegram-bot-api')
 
+var TelegramBot = require('node-telegram-bot-api')
 const bot = new TelegramBot(  process.env.BOT_TOKEN, { polling: false } );
 
 const chromium = require('chrome-aws-lambda');
 const puppeteer = require('puppeteer-core');
 const iPad = puppeteer.devices['iPad landscape'];
 
-const selectorBuyNowButton = '#buy-now-button'
-const selectorSignInButton = '#signInSubmit'
-const selectorContinueButton = '#continue'
-const selectorAddToList = '#wishListMainButton a'
-const selectorPrice = 'a.a-color-price'
-const product1 = '6465789'
-const product2 = 'B0995TBTLS'
-
-const EMAIL = process.env.EMAIL
-const PHONE = process.env.PHONE
-// const chatUserID = process.env.USER_ID
-
 async function run() {
 // (async () => {
+  const [,,product] = process.argv
+  if (!product) {
+    console.log('Define el código del producto') 
+    return null
+  }
 
-    const browser = await chromium.puppeteer.launch({
-        ignoreDefaultArgs: ['--disable-extensions'],
-        args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath: process.env.PATH_CHROME || await chromium.executablePath,
-        headless: false,
-        // headless: chromium.headless,
-    });
-  // const {} console.log(process.argv)
+  const browser = await chromium.puppeteer.launch({
+      ignoreDefaultArgs: ['--disable-extensions'],
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: process.env.PATH_CHROME || await chromium.executablePath,
+      headless: false,
+      // headless: chromium.headless,
+  });
+
   try {
 
-    const url = `https://www.bestbuy.com/site/${product1}.p?skuId=${product1}`
+    const url = `https://www.bestbuy.com/site/${product}.p?skuId=${product}`
     const page = await browser.newPage();
     // await page.emulate(iPad);
     await page.goto(url);
